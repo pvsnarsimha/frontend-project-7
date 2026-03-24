@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Quiz | Vector Physics Applications</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: var(--dark-color);
+            padding-top: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+        
+        .nav-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .nav-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        .ai-features {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .ai-section {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+        }
+        
+        .ai-section h4 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .ai-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .ai-button:hover {
+            background-color: #c0392b;
+        }
+        
+        .ai-response {
+            background-color: var(--light-color);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .step-explanation {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background-color: white;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .ai-thinking {
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        
+        /* Quiz specific styles */
+        .quiz-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .quiz-progress {
+            width: 100%;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        
+        .quiz-progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.3s;
+        }
+        
+        .question-container {
+            margin-bottom: 1.5rem;
+        }
+        
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .options-container {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .option {
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .option.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .option.correct {
+            background-color: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+        
+        .option.incorrect {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        
+        .quiz-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+        
+        .quiz-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .quiz-btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .quiz-btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .quiz-btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .quiz-btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .quiz-btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .quiz-btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .quiz-btn:disabled {
+            background-color: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+        }
+        
+        .feedback-container {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 5px;
+            background-color: #e8f4fd;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        
+        .badge {
+            padding: 0.5rem 1rem;
+            background-color: var(--warning-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .analytics-container {
+            margin-top: 2rem;
+        }
+        
+        .analytics-chart {
+            height: 200px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-end;
+            padding: 10px;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background-color: var(--primary-color);
+            margin: 0 5px;
+            border-radius: 3px 3px 0 0;
+            transition: height 0.5s;
+        }
+        
+        .tutor-chat {
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .chat-message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        
+        .user-message {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: auto;
+        }
+        
+        .tutor-message {
+            background-color: #e0e0e0;
+            color: var(--dark-color);
+        }
+        
+        .chat-input {
+            display: flex;
+            margin-top: 1rem;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px 0 0 5px;
+        }
+        
+        .chat-input button {
+            padding: 0.75rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+        
+        .gamification-panel {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .points-display {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .leaderboard {
+            margin-top: 1.5rem;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+        
+        .visual-explanation {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .visual-canvas {
+            height: 200px;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .quiz-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .quiz-btn {
+                width: 100%;
+            }
+            
+            .chat-message {
+                max-width: 90%;
+            }
+        }
+            /* Accessibility Improvements */
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        :root {
+            --primary-color: #0000ff;
+            --secondary-color: #000000;
+            --accent-color: #ff0000;
+            --success-color: #008000;
+            --warning-color: #ffa500;
+        }
+    }
+    
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+        
+        .card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Focus styles for keyboard navigation */
+    button:focus, 
+    .option:focus, 
+    input:focus, 
+    .nav-btn:focus {
+        outline: 3px solid var(--accent-color);
+        outline-offset: 2px;
+    }
+    
+    /* Larger click targets for mobile */
+    @media (max-width: 768px) {
+        .option, .quiz-btn, .ai-button {
+            min-height: 44px;
+            padding: 12px;
+        }
+    }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header text-center">
+            <div class="navigation-buttons">
+                <a href="vector_physics_applications.html" class="nav-btn">Back to Physics Applications</a>
+                <a href="Vector_visulization.html" class="nav-btn">Vector Visualization</a>
+                <a href="vectors_advanced_operations.html" class="nav-btn">Advanced Operations</a>
+            </div>
+            <h1>AI-Powered Quiz</h1>
+            <p class="lead">Interactive, adaptive quizzes with AI-driven personalization</p>
+        </div>
+
+        <!-- Gamification Panel -->
+        <div class="gamification-panel">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Your Progress</h4>
+                    <div class="points-display">Points: <span id="user-points">0</span></div>
+                    <div class="badge-container" id="badge-container">
+                        <!-- Badges will be dynamically added here -->
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>Leaderboard</h4>
+                    <div class="leaderboard" id="leaderboard">
+                        <div class="leaderboard-item">
+                            <span>You</span>
+                            <span id="user-rank">-</span>
+                        </div>
+                        <!-- Other leaderboard items will be dynamically added -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Features Section -->
+        <div class="ai-features">
+            <h3>AI-Powered Quiz Features</h3>
+            
+            <!-- Adaptive Problem Personalization -->
+            <div class="ai-section">
+                <h4>1. Adaptive Problem Personalization</h4>
+                <p>AI tracks your performance and tailors questions to your skill level and learning gaps.</p>
+                <div class="mb-3">
+                    <label class="form-label">Select Focus Areas:</label>
+                    <div>
+                        <input type="checkbox" id="focus-work" checked> <label for="focus-work">Work</label>
+                        <input type="checkbox" id="focus-area" checked> <label for="focus-area">Area</label>
+                        <input type="checkbox" id="focus-torque" checked> <label for="focus-torque">Torque</label>
+                        <input type="checkbox" id="focus-normal"> <label for="focus-normal">Normal Vectors</label>
+                        <input type="checkbox" id="focus-velocity"> <label for="focus-velocity">Velocity</label>
+                    </div>
+                </div>
+                <button class="ai-button" onclick="startAdaptiveQuiz()">Start Adaptive Quiz</button>
+                <div id="adaptive-quiz-status" class="ai-response" style="display: none;"></div>
+            </div>
+            
+            <!-- Real-Time Feedback and Error Analysis -->
+            <div class="ai-section">
+                <h4>2. Real-Time Feedback & Error Analysis</h4>
+                <p>Get immediate feedback on your answers with detailed error analysis.</p>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="real-time-feedback" checked>
+                    <label class="form-check-label" for="real-time-feedback">Enable Real-Time Feedback</label>
+                </div>
+                <div id="feedback-demo" class="ai-response" style="display: none;">
+                    <h5>Feedback Analysis</h5>
+                    <div id="feedback-content"></div>
+                </div>
+            </div>
+            
+            <!-- Interactive AI Tutor -->
+            <div class="ai-section">
+                <h4>3. Interactive AI Tutor</h4>
+                <p>Ask questions and get guidance from our AI tutor during the quiz.</p>
+                <div class="tutor-chat" id="tutor-chat">
+                    <div class="chat-message tutor-message">
+                        Hello! I'm your AI tutor. I can help explain concepts, provide hints, or clarify questions. What would you like to know?
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="tutor-input" placeholder="Ask a question about vectors...">
+                    <button onclick="askTutor()">Send</button>
+                </div>
+            </div>
+            
+            <!-- AI-Generated Visual Explanations -->
+            <div class="ai-section">
+                <h4>4. AI-Generated Visual Explanations</h4>
+                <p>Visualize vector concepts with dynamic, annotated diagrams.</p>
+                <button class="ai-button" onclick="generateVisualExplanation()">Generate Visual Explanation</button>
+                <div class="visual-explanation" id="visual-explanation" style="display: none;">
+                    <h5>Visual Explanation</h5>
+                    <div class="visual-canvas" id="visual-canvas"></div>
+                    <p id="visual-description"></p>
+                </div>
+            </div>
+            
+            <!-- Predictive Learning Path -->
+            <div class="ai-section">
+                <h4>5. Predictive Learning Path</h4>
+                <p>Get personalized recommendations based on your performance.</p>
+                <button class="ai-button" onclick="generateLearningPath()">Generate Learning Path</button>
+                <div id="learning-path" class="ai-response" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Quiz Interface -->
+        <div class="quiz-container">
+            <div class="quiz-header">
+                <h3 id="quiz-title">AI-Powered Vector Physics Quiz</h3>
+                <div id="quiz-timer">Time: <span id="timer-value">00:00</span></div>
+            </div>
+            
+            <div class="quiz-progress">
+                <div class="quiz-progress-bar" id="quiz-progress-bar" style="width: 0%"></div>
+            </div>
+            
+            <div class="question-container" id="question-container">
+                <div class="question-text" id="question-text">
+                    Welcome to the AI-Powered Quiz! Click "Start Quiz" to begin.
+                </div>
+                
+                <div class="options-container" id="options-container">
+                    <!-- Options will be dynamically added here -->
+                </div>
+                
+                <div class="feedback-container" id="feedback-container" style="display: none;">
+                    <!-- Feedback will be dynamically added here -->
+                </div>
+            </div>
+            
+            <div class="quiz-controls">
+                <button class="quiz-btn quiz-btn-secondary" id="prev-btn" onclick="prevQuestion()" disabled>Previous</button>
+                <button class="quiz-btn quiz-btn-primary" id="next-btn" onclick="nextQuestion()" style="display: none;">Next</button>
+                <button class="quiz-btn quiz-btn-success" id="start-btn" onclick="startQuiz()">Start Quiz</button>
+                <button class="quiz-btn quiz-btn-primary" id="submit-btn" onclick="submitQuiz()" style="display: none;">Submit Answer</button>
+                <button class="quiz-btn quiz-btn-success" id="finish-btn" onclick="finishQuiz()" style="display: none;">Finish Quiz</button>
+            </div>
+        </div>
+
+        <!-- Quiz Results -->
+        <div class="quiz-container" id="quiz-results" style="display: none;">
+            <h3>Quiz Results</h3>
+            
+            <div class="result-box">
+                <h4>Score: <span id="quiz-score">0</span>/<span id="quiz-max-score">0</span> (<span id="quiz-percentage">0</span>%)</h4>
+                <p id="quiz-grade"></p>
+                <p id="quiz-feedback-text"></p>
+            </div>
+            
+            <!-- Detailed Analytics -->
+            <div class="analytics-container">
+                <h5>Performance Analytics</h5>
+                <div class="analytics-chart" id="analytics-chart">
+                    <!-- Chart bars will be dynamically added -->
+                </div>
+                <div id="topic-breakdown"></div>
+            </div>
+            
+            <!-- Question Review -->
+            <div id="quiz-review" class="mt-4">
+                <h5>Question Review</h5>
+                <div id="question-review-list"></div>
+            </div>
+            
+            <div class="quiz-controls mt-4">
+                <button class="quiz-btn quiz-btn-primary" onclick="retakeQuiz()">Retake Quiz</button>
+                <button class="quiz-btn quiz-btn-secondary" onclick="showRecommendations()">Show Recommendations</button>
+            </div>
+        </div>
+
+        <footer class="text-center mt-5">
+            <p>AI-Powered Quiz &copy; 2023 | Vector Physics Applications</p>
+        </footer>
+    </div>
+
+    <script>
+        // Quiz State Variables
+        let currentQuiz = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let quizScore = 0;
+        let quizTimer = null;
+        let timeElapsed = 0;
+        let userPerformance = {};
+        let userPoints = 0;
+        let userBadges = [];
+        
+        // Enhanced Quiz Question Database
+        const quizQuestions = {
+            easy: [
+                {
+                    id: 1,
+                    question: "What is the dot product of vectors (3, 2) and (1, 4)?",
+                    options: ["11", "14", "10", "12"],
+                    correctAnswer: 0,
+                    explanation: "The dot product is calculated as (3×1) + (2×4) = 3 + 8 = 11.",
+                    topic: "work",
+                    difficulty: "easy",
+                    visual: "dot_product"
+                },
+                {
+                    id: 2,
+                    question: "What is the area of the parallelogram formed by vectors (3, 2) and (1, 4)?",
+                    options: ["10", "12", "14", "16"],
+                    correctAnswer: 0,
+                    explanation: "Area = |3×4 - 2×1| = |12 - 2| = 10.",
+                    topic: "area",
+                    difficulty: "easy",
+                    visual: "parallelogram_area"
+                },
+                {
+                    id: 3,
+                    question: "What is the unit vector in the direction of (3, 4)?",
+                    options: ["(0.6, 0.8)", "(0.5, 0.5)", "(0.7, 0.7)", "(0.8, 0.6)"],
+                    correctAnswer: 0,
+                    explanation: "Magnitude = √(3²+4²) = 5. Unit vector = (3/5, 4/5) = (0.6, 0.8).",
+                    topic: "normalization",
+                    difficulty: "easy",
+                    visual: "unit_vector"
+                }
+            ],
+            medium: [
+                {
+                    id: 4,
+                    question: "Calculate the cross product of vectors (2, 3, 1) and (4, -1, 3).",
+                    options: ["(10, -2, -14)", "(8, -3, 3)", "(5, 2, -10)", "(12, -4, 6)"],
+                    correctAnswer: 0,
+                    explanation: "Cross product = (3×3 - 1×(-1), 1×4 - 2×3, 2×(-1) - 3×4) = (9+1, 4-6, -2-12) = (10, -2, -14).",
+                    topic: "torque",
+                    difficulty: "medium",
+                    visual: "cross_product"
+                },
+                {
+                    id: 5,
+                    question: "What is the torque produced by a 12N force applied 0.5m from a pivot at 60°?",
+                    options: ["3 N·m", "5.2 N·m", "6 N·m", "4.5 N·m"],
+                    correctAnswer: 1,
+                    explanation: "Torque = r × F × sin(θ) = 0.5 × 12 × sin(60°) = 6 × 0.866 = 5.2 N·m.",
+                    topic: "torque",
+                    difficulty: "medium",
+                    visual: "torque"
+                },
+                {
+                    id: 6,
+                    question: "Find the normal vector to the plane defined by vectors (3, 1, 2) and (1, 2, 3).",
+                    options: ["(-1, -7, 5)", "(2, 4, -3)", "(-2, 5, -1)", "(1, -4, 2)"],
+                    correctAnswer: 0,
+                    explanation: "Cross product = (1×3-2×2, 2×1-3×3, 3×2-1×1) = (3-4, 2-9, 6-1) = (-1, -7, 5).",
+                    topic: "normal",
+                    difficulty: "medium",
+                    visual: "normal_vector"
+                }
+            ],
+            hard: [
+                {
+                    id: 7,
+                    question: "Calculate the distance from point (2, 3, 4) to the plane x + y + z - 5 = 0.",
+                    options: ["1.15 units", "2.31 units", "0.58 units", "3.46 units"],
+                    correctAnswer: 1,
+                    explanation: "Distance = |1×2+1×3+1×4-5|/√(1²+1²+1²) = |2+3+4-5|/√3 = |4|/√3 ≈ 2.31.",
+                    topic: "distance",
+                    difficulty: "hard",
+                    visual: "distance_to_plane"
+                },
+                {
+                    id: 8,
+                    question: "What is the line of intersection of planes 2x+y-z=3 and x-y+2z=1?",
+                    options: ["r=(1,0,0)+t(1,-5,-3)", "r=(0,1,2)+t(2,1,-1)", "r=(2,1,0)+t(1,2,3)", "r=(1,1,1)+t(3,-2,1)"],
+                    correctAnswer: 0,
+                    explanation: "Direction vector = (2,1,-1)×(1,-1,2) = (1,-5,-3). Solve system to find point (1,0,0).",
+                    topic: "line",
+                    difficulty: "hard",
+                    visual: "line_intersection"
+                },
+                {
+                    id: 9,
+                    question: "Find the shortest distance between skew lines: r=(1,2,3)+t(1,1,1) and r=(4,5,6)+s(2,-1,1).",
+                    options: ["0 units", "1.5 units", "2.2 units", "3.1 units"],
+                    correctAnswer: 0,
+                    explanation: "The lines intersect (check by solving system), so shortest distance is 0.",
+                    topic: "velocity",
+                    difficulty: "hard",
+                    visual: "skew_lines"
+                }
+            ]
+        };
+
+        // Scenario-based questions
+        const scenarioQuestions = [
+            {
+                id: 10,
+                question: "A boat is trying to cross a river flowing east at 3 m/s. If the boat's engine provides a velocity of 4 m/s north, what is the boat's resultant velocity?",
+                options: ["5 m/s at 37° NE", "7 m/s north", "1 m/s west", "5 m/s at 53° NE"],
+                correctAnswer: 0,
+                explanation: "Resultant velocity = √(3² + 4²) = 5 m/s. Direction = tan⁻¹(4/3) ≈ 53° from east or 37° from north.",
+                topic: "velocity",
+                difficulty: "medium",
+                scenario: true,
+                visual: "resultant_velocity"
+            },
+            {
+                id: 11,
+                question: "A force of 8N is applied to a wrench 0.3m from a bolt. If the force is applied at an angle of 60° to the wrench, what is the torque on the bolt?",
+                options: ["1.2 N·m", "2.08 N·m", "2.4 N·m", "4.16 N·m"],
+                correctAnswer: 1,
+                explanation: "Torque = r × F × sin(θ) = 0.3 × 8 × sin(60°) = 2.4 × 0.866 = 2.08 N·m.",
+                topic: "torque",
+                difficulty: "medium",
+                scenario: true,
+                visual: "wrench_torque"
+            }
+        ];
+
+        // Initialize user performance tracking
+        function initializeUserPerformance() {
+            const topics = ['work', 'area', 'torque', 'normal', 'velocity', 'distance', 'line'];
+            topics.forEach(topic => {
+                userPerformance[topic] = {
+                    correct: 0,
+                    total: 0,
+                    accuracy: 0
+                };
+            });
+            
+            // Load from localStorage if available
+            const savedPerformance = localStorage.getItem('vectorPhysicsPerformance');
+            if (savedPerformance) {
+                userPerformance = JSON.parse(savedPerformance);
+            }
+            
+            const savedPoints = localStorage.getItem('vectorPhysicsPoints');
+            if (savedPoints) {
+                userPoints = parseInt(savedPoints);
+                document.getElementById('user-points').textContent = userPoints;
+            }
+            
+            const savedBadges = localStorage.getItem('vectorPhysicsBadges');
+            if (savedBadges) {
+                userBadges = JSON.parse(savedBadges);
+                updateBadgesDisplay();
+            }
+        }
+
+        // Update user performance after each question
+        function updateUserPerformance(topic, isCorrect) {
+            userPerformance[topic].total++;
+            if (isCorrect) {
+                userPerformance[topic].correct++;
+            }
+            userPerformance[topic].accuracy = (userPerformance[topic].correct / userPerformance[topic].total) * 100;
+            
+            // Save to localStorage
+            localStorage.setItem('vectorPhysicsPerformance', JSON.stringify(userPerformance));
+            
+            // Award points
+            const pointsEarned = isCorrect ? 10 : 2; // More points for correct answers
+            userPoints += pointsEarned;
+            document.getElementById('user-points').textContent = userPoints;
+            localStorage.setItem('vectorPhysicsPoints', userPoints.toString());
+            
+            // Check for badges
+            checkForBadges(topic, isCorrect);
+        }
+
+        // Check and award badges
+        function checkForBadges(topic, isCorrect) {
+            const badges = [
+                { id: 'first_question', name: 'First Step', condition: () => Object.values(userPerformance).some(p => p.total > 0) },
+                { id: 'quick_learner', name: 'Quick Learner', condition: () => userPoints >= 50 },
+                { id: 'vector_master', name: 'Vector Master', condition: () => userPoints >= 100 },
+                { id: 'topic_expert', name: `${topic.charAt(0).toUpperCase() + topic.slice(1)} Expert`, condition: () => userPerformance[topic].accuracy >= 80 && userPerformance[topic].total >= 5 },
+                { id: 'persistence', name: 'Persistent Learner', condition: () => Object.values(userPerformance).reduce((sum, p) => sum + p.total, 0) >= 20 },
+                { id: 'accuracy_king', name: 'Accuracy King', condition: () => Object.values(userPerformance).every(p => p.accuracy >= 70) && Object.values(userPerformance).some(p => p.total >= 3) }
+            ];
+            
+            badges.forEach(badge => {
+                if (!userBadges.includes(badge.id) && badge.condition()) {
+                    userBadges.push(badge.id);
+                    showBadgeNotification(badge.name);
+                }
+            });
+            
+            localStorage.setItem('vectorPhysicsBadges', JSON.stringify(userBadges));
+            updateBadgesDisplay();
+        }
+
+        // Update badges display
+        function updateBadgesDisplay() {
+            const badgeContainer = document.getElementById('badge-container');
+            badgeContainer.innerHTML = '';
+            
+            userBadges.forEach(badgeId => {
+                const badge = getBadgeById(badgeId);
+                if (badge) {
+                    const badgeElement = document.createElement('div');
+                    badgeElement.className = 'badge';
+                    badgeElement.textContent = badge.name;
+                    badgeContainer.appendChild(badgeElement);
+                }
+            });
+        }
+
+        // Get badge by ID
+        function getBadgeById(badgeId) {
+            const badges = [
+                { id: 'first_question', name: 'First Step' },
+                { id: 'quick_learner', name: 'Quick Learner' },
+                { id: 'vector_master', name: 'Vector Master' },
+                { id: 'topic_expert_work', name: 'Work Expert' },
+                { id: 'topic_expert_area', name: 'Area Expert' },
+                { id: 'topic_expert_torque', name: 'Torque Expert' },
+                { id: 'topic_expert_normal', name: 'Normal Vectors Expert' },
+                { id: 'topic_expert_velocity', name: 'Velocity Expert' },
+                { id: 'persistence', name: 'Persistent Learner' },
+                { id: 'accuracy_king', name: 'Accuracy King' }
+            ];
+            
+            return badges.find(b => b.id === badgeId);
+        }
+
+        // Show badge notification
+        function showBadgeNotification(badgeName) {
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-success alert-dismissible fade show';
+            notification.innerHTML = `
+                <strong>Congratulations!</strong> You earned the "${badgeName}" badge!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.querySelector('.gamification-panel').appendChild(notification);
+        }
+
+        // Start adaptive quiz based on user performance
+        function startAdaptiveQuiz() {
+            const focusAreas = [];
+            if (document.getElementById('focus-work').checked) focusAreas.push('work');
+            if (document.getElementById('focus-area').checked) focusAreas.push('area');
+            if (document.getElementById('focus-torque').checked) focusAreas.push('torque');
+            if (document.getElementById('focus-normal').checked) focusAreas.push('normal');
+            if (document.getElementById('focus-velocity').checked) focusAreas.push('velocity');
+            
+            if (focusAreas.length === 0) {
+                alert('Please select at least one focus area.');
+                return;
+            }
+            
+            // Determine user level based on performance
+            let userLevel = 'easy';
+            const totalAccuracy = Object.values(userPerformance)
+                .filter(p => p.total > 0)
+                .reduce((sum, p) => sum + p.accuracy, 0) / Object.values(userPerformance).filter(p => p.total > 0).length;
+            
+            if (totalAccuracy >= 70) userLevel = 'medium';
+            if (totalAccuracy >= 85) userLevel = 'hard';
+            
+            // Select questions based on focus areas and user level
+            let selectedQuestions = [];
+            
+            // Include some questions from user's weak areas
+            const weakAreas = Object.entries(userPerformance)
+                .filter(([topic, perf]) => focusAreas.includes(topic) && perf.accuracy < 70)
+                .map(([topic]) => topic);
+            
+            weakAreas.forEach(topic => {
+                const topicQuestions = [...quizQuestions.easy, ...quizQuestions.medium, ...quizQuestions.hard]
+                    .filter(q => q.topic === topic)
+                    .sort((a, b) => a.difficulty.localeCompare(b.difficulty));
+                
+                if (topicQuestions.length > 0) {
+                    selectedQuestions.push(topicQuestions[0]);
+                }
+            });
+            
+            // Fill remaining slots with questions from focus areas
+            const remainingSlots = 5 - selectedQuestions.length;
+            if (remainingSlots > 0) {
+                const allFocusQuestions = [...quizQuestions.easy, ...quizQuestions.medium, ...quizQuestions.hard, ...scenarioQuestions]
+                    .filter(q => focusAreas.includes(q.topic) && !selectedQuestions.some(sq => sq.id === q.id));
+                
+                // Add questions at user's level
+                const levelQuestions = allFocusQuestions.filter(q => q.difficulty === userLevel);
+                selectedQuestions = selectedQuestions.concat(levelQuestions.slice(0, Math.min(remainingSlots, levelQuestions.length)));
+                
+                // If not enough questions at user's level, add from adjacent levels
+                const remainingAfterLevel = remainingSlots - levelQuestions.length;
+                if (remainingAfterLevel > 0) {
+                    let adjacentLevel = userLevel === 'easy' ? 'medium' : userLevel === 'hard' ? 'medium' : 'easy';
+                    const adjacentQuestions = allFocusQuestions.filter(q => q.difficulty === adjacentLevel);
+                    selectedQuestions = selectedQuestions.concat(adjacentQuestions.slice(0, Math.min(remainingAfterLevel, adjacentQuestions.length)));
+                }
+            }
+            
+            // Shuffle questions
+            selectedQuestions = selectedQuestions.sort(() => Math.random() - 0.5);
+            
+            // Start the quiz
+            startQuizWithQuestions(selectedQuestions, 'Adaptive Quiz');
+            
+            // Update status
+            document.getElementById('adaptive-quiz-status').style.display = 'block';
+            document.getElementById('adaptive-quiz-status').innerHTML = `
+                <p>Adaptive quiz started with focus on: ${focusAreas.join(', ')}</p>
+                <p>Your current level: ${userLevel.charAt(0).toUpperCase() + userLevel.slice(1)}</p>
+                <p>Questions tailored to your performance and learning gaps.</p>
+            `;
+        }
+
+        // Start quiz with specific questions
+        function startQuizWithQuestions(questions, title) {
+            currentQuiz = questions;
+            currentQuestionIndex = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            quizScore = 0;
+            timeElapsed = 0;
+            
+            document.getElementById('quiz-title').textContent = title;
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('submit-btn').style.display = 'inline-block';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('prev-btn').disabled = true;
+            
+            // Start timer
+            if (quizTimer) clearInterval(quizTimer);
+            quizTimer = setInterval(() => {
+                timeElapsed++;
+                const minutes = Math.floor(timeElapsed / 60);
+                const seconds = timeElapsed % 60;
+                document.getElementById('timer-value').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+            
+            displayQuestion();
+        }
+
+        // Start a regular quiz
+        function startQuiz() {
+            // Mix questions from different difficulty levels and scenarios
+            const allQuestions = [
+                ...quizQuestions.easy.slice(0, 2),
+                ...quizQuestions.medium.slice(0, 2),
+                ...quizQuestions.hard.slice(0, 1),
+                ...scenarioQuestions.slice(0, 1)
+            ].sort(() => Math.random() - 0.5);
+            
+            startQuizWithQuestions(allQuestions, 'Vector Physics Quiz');
+        }
+
+        // Display current question
+        function displayQuestion() {
+            const question = currentQuiz[currentQuestionIndex];
+            document.getElementById('question-text').textContent = question.question;
+            
+            // Update progress bar
+            const progress = ((currentQuestionIndex + 1) / currentQuiz.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${progress}%`;
+            
+            // Display options
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.onclick = () => selectOption(index);
+                
+                // If user has already answered this question, show their selection
+                if (userAnswers[currentQuestionIndex] === index) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            document.getElementById('next-btn').style.display = currentQuestionIndex === currentQuiz.length - 1 ? 'none' : 'inline-block';
+            document.getElementById('submit-btn').style.display = userAnswers[currentQuestionIndex] === null ? 'inline-block' : 'none';
+            document.getElementById('finish-btn').style.display = currentQuestionIndex === currentQuiz.length - 1 && userAnswers[currentQuestionIndex] !== null ? 'inline-block' : 'none';
+            
+            // Clear feedback
+            document.getElementById('feedback-container').style.display = 'none';
+        }
+
+        // Select an option
+        function selectOption(optionIndex) {
+            // Clear previous selection
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            
+            // Select new option
+            options[optionIndex].classList.add('selected');
+            userAnswers[currentQuestionIndex] = optionIndex;
+            
+            // Enable submit button
+            document.getElementById('submit-btn').style.display = 'inline-block';
+            document.getElementById('finish-btn').style.display = currentQuestionIndex === currentQuiz.length - 1 ? 'inline-block' : 'none';
+            
+            // If real-time feedback is enabled, provide immediate feedback
+            if (document.getElementById('real-time-feedback').checked) {
+                provideRealTimeFeedback(optionIndex);
+            }
+        }
+
+        // Provide real-time feedback
+        function provideRealTimeFeedback(selectedOption) {
+            const question = currentQuiz[currentQuestionIndex];
+            const isCorrect = selectedOption === question.correctAnswer;
+            
+            const feedbackContainer = document.getElementById('feedback-container');
+            feedbackContainer.style.display = 'block';
+            
+            if (isCorrect) {
+                feedbackContainer.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>Correct!</strong> ${question.explanation}
+                    </div>
+                `;
+                
+                // Show visual explanation if available
+                if (question.visual) {
+                    generateQuestionVisual(question.visual);
+                }
+            } else {
+                feedbackContainer.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>Incorrect.</strong> Let me explain why...
+                    </div>
+                    <div class="step-explanation">
+                        <p>${question.explanation}</p>
+                    </div>
+                `;
+                
+                // Show AI error analysis
+                showErrorAnalysis(question, selectedOption);
+            }
+            
+            // Update feedback demo
+            document.getElementById('feedback-demo').style.display = 'block';
+            document.getElementById('feedback-content').innerHTML = `
+                <h6>Error Analysis for Question ${currentQuestionIndex + 1}</h6>
+                <p><strong>Your Answer:</strong> ${question.options[selectedOption]}</p>
+                <p><strong>Correct Answer:</strong> ${question.options[question.correctAnswer]}</p>
+                <p><strong>Explanation:</strong> ${question.explanation}</p>
+            `;
+        }
+
+        // Show AI error analysis
+        function showErrorAnalysis(question, selectedOption) {
+            const feedbackContainer = document.getElementById('feedback-container');
+            
+            // Simulate AI thinking
+            const thinkingElement = document.createElement('div');
+            thinkingElement.className = 'ai-thinking';
+            thinkingElement.innerHTML = '<p>AI Tutor is analyzing your mistake...</p>';
+            feedbackContainer.appendChild(thinkingElement);
+            
+            // After a short delay, show the analysis
+            setTimeout(() => {
+                thinkingElement.remove();
+                
+                let analysis = '';
+                
+                // Generate analysis based on question topic and error
+                switch(question.topic) {
+                    case 'work':
+                        analysis = "It seems you might have confused the dot product formula. Remember: A·B = A_x×B_x + A_y×B_y for 2D vectors.";
+                        break;
+                    case 'area':
+                        analysis = "For parallelogram area, remember it's the magnitude of the cross product: |A×B| = |A_x×B_y - A_y×B_x| for 2D vectors.";
+                        break;
+                    case 'torque':
+                        analysis = "Torque calculation requires the perpendicular component of force. Don't forget the sin(θ) term in τ = r×F×sin(θ).";
+                        break;
+                    case 'normal':
+                        analysis = "The normal vector is perpendicular to both given vectors. Use the cross product to find it.";
+                        break;
+                    default:
+                        analysis = "Let's review the fundamental concepts for this topic. Would you like me to explain the key principles?";
+                }
+                
+                const analysisElement = document.createElement('div');
+                analysisElement.className = 'step-explanation';
+                analysisElement.innerHTML = `
+                    <h6>AI Error Analysis</h6>
+                    <p>${analysis}</p>
+                    <button class="ai-button" onclick="askTutorAboutQuestion(${currentQuestionIndex})">Ask AI Tutor for Help</button>
+                `;
+                feedbackContainer.appendChild(analysisElement);
+            }, 1500);
+        }
+
+        // Submit answer
+        function submitAnswer() {
+            if (userAnswers[currentQuestionIndex] === null) {
+                alert('Please select an answer before submitting.');
+                return;
+            }
+            
+            const question = currentQuiz[currentQuestionIndex];
+            const isCorrect = userAnswers[currentQuestionIndex] === question.correctAnswer;
+            
+            // Update performance tracking
+            updateUserPerformance(question.topic, isCorrect);
+            
+            // Show correct/incorrect feedback
+            const options = document.querySelectorAll('.option');
+            options.forEach((option, index) => {
+                if (index === question.correctAnswer) {
+                    option.classList.add('correct');
+                } else if (index === userAnswers[currentQuestionIndex] && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+                option.onclick = null; // Disable further selection
+            });
+            
+            // Update navigation
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('next-btn').style.display = currentQuestionIndex < currentQuiz.length - 1 ? 'inline-block' : 'none';
+            document.getElementById('finish-btn').style.display = currentQuestionIndex === currentQuiz.length - 1 ? 'inline-block' : 'none';
+            
+            // If this was the last question and user wants to finish
+            if (currentQuestionIndex === currentQuiz.length - 1) {
+                document.getElementById('finish-btn').style.display = 'inline-block';
+            }
+        }
+
+        // Next question
+        function nextQuestion() {
+            if (currentQuestionIndex < currentQuiz.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        // Previous question
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        // Finish quiz
+        function finishQuiz() {
+            // Calculate final score
+            quizScore = 0;
+            currentQuiz.forEach((question, index) => {
+                if (userAnswers[index] === question.correctAnswer) {
+                    quizScore++;
+                }
+            });
+            
+            // Stop timer
+            if (quizTimer) {
+                clearInterval(quizTimer);
+                quizTimer = null;
+            }
+            
+            // Show results
+            showQuizResults();
+        }
+
+        // Show quiz results
+        function showQuizResults() {
+            document.getElementById('quiz-results').style.display = 'block';
+            document.querySelector('.quiz-container').style.display = 'none';
+            
+            const percentage = (quizScore / currentQuiz.length) * 100;
+            document.getElementById('quiz-score').textContent = quizScore;
+            document.getElementById('quiz-max-score').textContent = currentQuiz.length;
+            document.getElementById('quiz-percentage').textContent = percentage.toFixed(1);
+            
+            // Determine grade
+            let grade, feedback;
+            if (percentage >= 90) {
+                grade = 'A+';
+                feedback = 'Excellent work! You have a strong understanding of vector physics.';
+            } else if (percentage >= 80) {
+                grade = 'A';
+                feedback = 'Great job! You have a good grasp of vector concepts.';
+            } else if (percentage >= 70) {
+                grade = 'B';
+                feedback = 'Good work! You understand the basics but could use some practice.';
+            } else if (percentage >= 60) {
+                grade = 'C';
+                feedback = 'Not bad! Review the concepts and try again.';
+            } else {
+                grade = 'D';
+                feedback = 'Keep practicing! Focus on the fundamental concepts.';
+            }
+            
+            document.getElementById('quiz-grade').textContent = `Grade: ${grade}`;
+            document.getElementById('quiz-feedback-text').textContent = feedback;
+            
+            // Generate analytics
+            generateAnalytics();
+            
+            // Generate question review
+            generateQuestionReview();
+        }
+
+        // Generate performance analytics
+        function generateAnalytics() {
+            const analyticsChart = document.getElementById('analytics-chart');
+            analyticsChart.innerHTML = '';
+            
+            const topicBreakdown = document.getElementById('topic-breakdown');
+            topicBreakdown.innerHTML = '<h6>Performance by Topic</h6>';
+            
+            // Calculate performance by topic for this quiz
+            const topicPerformance = {};
+            currentQuiz.forEach((question, index) => {
+                const topic = question.topic;
+                if (!topicPerformance[topic]) {
+                    topicPerformance[topic] = { correct: 0, total: 0 };
+                }
+                topicPerformance[topic].total++;
+                if (userAnswers[index] === question.correctAnswer) {
+                    topicPerformance[topic].correct++;
+                }
+            });
+            
+            // Create chart bars
+            Object.entries(topicPerformance).forEach(([topic, perf]) => {
+                const accuracy = (perf.correct / perf.total) * 100;
+                
+                // Chart bar
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = `${accuracy}%`;
+                bar.title = `${topic}: ${accuracy.toFixed(1)}%`;
+                analyticsChart.appendChild(bar);
+                
+                // Topic breakdown
+                const topicElement = document.createElement('div');
+                topicElement.innerHTML = `
+                    <p><strong>${topic.charAt(0).toUpperCase() + topic.slice(1)}:</strong> ${perf.correct}/${perf.total} (${accuracy.toFixed(1)}%)</p>
+                `;
+                topicBreakdown.appendChild(topicElement);
+            });
+        }
+
+        // Generate question review
+        function generateQuestionReview() {
+            const reviewList = document.getElementById('question-review-list');
+            reviewList.innerHTML = '';
+            
+            currentQuiz.forEach((question, index) => {
+                const isCorrect = userAnswers[index] === question.correctAnswer;
+                const userAnswer = userAnswers[index] !== null ? question.options[userAnswers[index]] : 'Not answered';
+                const correctAnswer = question.options[question.correctAnswer];
+                
+                const reviewItem = document.createElement('div');
+                reviewItem.className = `card mb-3 ${isCorrect ? 'border-success' : 'border-danger'}`;
+                reviewItem.innerHTML = `
+                    <div class="card-header ${isCorrect ? 'bg-success' : 'bg-danger'} text-white">
+                        Question ${index + 1}: ${isCorrect ? 'Correct' : 'Incorrect'}
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">${question.question}</h6>
+                        <p><strong>Your answer:</strong> ${userAnswer}</p>
+                        <p><strong>Correct answer:</strong> ${correctAnswer}</p>
+                        <p><strong>Explanation:</strong> ${question.explanation}</p>
+                        ${question.scenario ? '<p class="text-muted"><em>Scenario-based question</em></p>' : ''}
+                        <button class="btn btn-sm btn-outline-primary" onclick="generateQuestionVisual('${question.visual}', ${index})">Show Visual Explanation</button>
+                    </div>
+                `;
+                reviewList.appendChild(reviewItem);
+            });
+        }
+
+        // Retake quiz
+        function retakeQuiz() {
+            document.getElementById('quiz-results').style.display = 'none';
+            document.querySelector('.quiz-container').style.display = 'block';
+            startQuiz();
+        }
+
+        // Show recommendations
+        function showRecommendations() {
+            // Find weak areas
+            const weakAreas = Object.entries(userPerformance)
+                .filter(([topic, perf]) => perf.total > 0 && perf.accuracy < 70)
+                .sort((a, b) => a[1].accuracy - b[1].accuracy)
+                .slice(0, 3);
+            
+            let recommendations = '<h5>Personalized Learning Path</h5><ul>';
+            
+            if (weakAreas.length > 0) {
+                weakAreas.forEach(([topic, perf]) => {
+                    recommendations += `<li>Focus on <strong>${topic}</strong> (current accuracy: ${perf.accuracy.toFixed(1)}%)</li>`;
+                });
+            } else {
+                // If no weak areas, suggest next topics
+                const allTopics = ['work', 'area', 'torque', 'normal', 'velocity', 'distance', 'line'];
+                const studiedTopics = Object.entries(userPerformance)
+                    .filter(([topic, perf]) => perf.total > 0)
+                    .map(([topic]) => topic);
+                
+                const nextTopics = allTopics.filter(topic => !studiedTopics.includes(topic));
+                if (nextTopics.length > 0) {
+                    recommendations += `<li>Explore new topic: <strong>${nextTopics[0]}</strong></li>`;
+                } else {
+                    recommendations += `<li>You've covered all topics! Try more challenging problems.</li>`;
+                }
+            }
+            
+            recommendations += '</ul>';
+            
+            document.getElementById('learning-path').style.display = 'block';
+            document.getElementById('learning-path').innerHTML = recommendations;
+        }
+
+        // Generate learning path
+        function generateLearningPath() {
+            showRecommendations();
+        }
+
+        // Ask AI tutor
+        function askTutor() {
+            const input = document.getElementById('tutor-input').value.trim();
+            if (!input) return;
+            
+            const tutorChat = document.getElementById('tutor-chat');
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'chat-message user-message';
+            userMessage.textContent = input;
+            tutorChat.appendChild(userMessage);
+            
+            // Clear input
+            document.getElementById('tutor-input').value = '';
+            
+            // Scroll to bottom
+            tutorChat.scrollTop = tutorChat.scrollHeight;
+            
+            // Simulate AI thinking
+            const thinkingMessage = document.createElement('div');
+            thinkingMessage.className = 'chat-message tutor-message ai-thinking';
+            thinkingMessage.textContent = 'Thinking...';
+            tutorChat.appendChild(thinkingMessage);
+            
+            // Scroll to bottom
+            tutorChat.scrollTop = tutorChat.scrollHeight;
+            
+            // Generate AI response after a short delay
+            setTimeout(() => {
+                thinkingMessage.remove();
+                
+                const tutorResponse = document.createElement('div');
+                tutorResponse.className = 'chat-message tutor-message';
+                
+                // Generate response based on input
+                let response = generateTutorResponse(input);
+                tutorResponse.innerHTML = response;
+                
+                tutorChat.appendChild(tutorResponse);
+                
+                // Scroll to bottom
+                tutorChat.scrollTop = tutorChat.scrollHeight;
+            }, 1500);
+        }
+
+        // Ask AI tutor about a specific question
+        function askTutorAboutQuestion(questionIndex) {
+            const question = currentQuiz[questionIndex];
+            const tutorChat = document.getElementById('tutor-chat');
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'chat-message user-message';
+            userMessage.textContent = `Can you explain question ${questionIndex + 1}: ${question.question}`;
+            tutorChat.appendChild(userMessage);
+            
+            // Simulate AI thinking
+            const thinkingMessage = document.createElement('div');
+            thinkingMessage.className = 'chat-message tutor-message ai-thinking';
+            thinkingMessage.textContent = 'Analyzing the question...';
+            tutorChat.appendChild(thinkingMessage);
+            
+            // Scroll to bottom
+            tutorChat.scrollTop = tutorChat.scrollHeight;
+            
+            // Generate AI response after a short delay
+            setTimeout(() => {
+                thinkingMessage.remove();
+                
+                const tutorResponse = document.createElement('div');
+                tutorResponse.className = 'chat-message tutor-message';
+                
+                // Generate detailed explanation
+                let response = `<h6>Explanation for Question ${questionIndex + 1}</h6>`;
+                response += `<p><strong>Question:</strong> ${question.question}</p>`;
+                response += `<p><strong>Concept:</strong> ${getConceptDescription(question.topic)}</p>`;
+                response += `<p><strong>Step-by-step solution:</strong></p>`;
+                response += `<p>${question.explanation}</p>`;
+                
+                if (question.visual) {
+                    response += `<button class="ai-button" onclick="generateQuestionVisual('${question.visual}', ${questionIndex})">Show Visual Explanation</button>`;
+                }
+                
+                tutorResponse.innerHTML = response;
+                tutorChat.appendChild(tutorResponse);
+                
+                // Scroll to bottom
+                tutorChat.scrollTop = tutorChat.scrollHeight;
+            }, 2000);
+        }
+
+        // Generate tutor response based on input
+        function generateTutorResponse(input) {
+            input = input.toLowerCase();
+            
+            if (input.includes('dot product') || input.includes('work')) {
+                return `
+                    <h6>Dot Product (Work)</h6>
+                    <p>The dot product of two vectors A and B is calculated as:</p>
+                    <p>A·B = |A||B|cos(θ) = A<sub>x</sub>B<sub>x</sub> + A<sub>y</sub>B<sub>y</sub> + A<sub>z</sub>B<sub>z</sub></p>
+                    <p>It represents the projection of one vector onto another. In physics, work is the dot product of force and displacement vectors.</p>
+                    <p><strong>Example:</strong> If F = (3, 2) and d = (1, 4), then W = F·d = 3×1 + 2×4 = 11</p>
+                `;
+            } else if (input.includes('cross product') || input.includes('torque') || input.includes('area')) {
+                return `
+                    <h6>Cross Product (Torque/Area)</h6>
+                    <p>The cross product of two vectors A and B produces a vector perpendicular to both:</p>
+                    <p>A×B = (A<sub>y</sub>B<sub>z</sub> - A<sub>z</sub>B<sub>y</sub>, A<sub>z</sub>B<sub>x</sub> - A<sub>x</sub>B<sub>z</sub>, A<sub>x</sub>B<sub>y</sub> - A<sub>y</sub>B<sub>x</sub>)</p>
+                    <p>Its magnitude equals the area of the parallelogram formed by A and B.</p>
+                    <p>In physics, torque τ = r × F, where r is the position vector and F is the force.</p>
+                `;
+            } else if (input.includes('unit vector') || input.includes('normal')) {
+                return `
+                    <h6>Unit Vectors & Normalization</h6>
+                    <p>A unit vector has magnitude 1 and indicates direction.</p>
+                    <p>To normalize a vector v: û = v/|v|</p>
+                    <p><strong>Example:</strong> For v = (3, 4), |v| = √(3²+4²) = 5, so û = (3/5, 4/5) = (0.6, 0.8)</p>
+                    <p>A normal vector is perpendicular to a surface. For a plane defined by two vectors, the cross product gives the normal.</p>
+                `;
+            } else if (input.includes('help') || input.includes('confused')) {
+                return `
+                    <h6>How I Can Help</h6>
+                    <p>I can assist with:</p>
+                    <ul>
+                        <li>Explaining vector concepts (dot product, cross product, etc.)</li>
+                        <li>Step-by-step problem solving</li>
+                        <li>Visualizing vector operations</li>
+                        <li>Identifying and correcting errors in your approach</li>
+                    </ul>
+                    <p>Try asking about specific topics or questions!</p>
+                `;
+            } else {
+                return `
+                    <p>I understand you're asking about "${input}". While I'm specialized in vector physics, 
+                    I can help explain concepts related to vectors, their applications in physics, 
+                    and guide you through problem-solving. Could you rephrase your question or 
+                    ask about a specific vector physics topic?</p>
+                    <p>For example, you could ask about:</p>
+                    <ul>
+                        <li>Dot product and work calculations</li>
+                        <li>Cross product and torque</li>
+                        <li>Vector normalization</li>
+                        <li>Finding normal vectors</li>
+                    </ul>
+                `;
+            }
+        }
+
+        // Get concept description
+        function getConceptDescription(topic) {
+            const descriptions = {
+                work: "The dot product of force and displacement vectors, representing the work done.",
+                area: "The magnitude of the cross product of two vectors equals the area of the parallelogram they form.",
+                torque: "The cross product of position and force vectors, causing rotational motion.",
+                normal: "A vector perpendicular to a surface, found using the cross product of two vectors in the plane.",
+                velocity: "A vector quantity representing speed and direction of motion.",
+                distance: "The shortest path between points or from a point to a line/plane.",
+                line: "A straight path in space defined by a point and a direction vector.",
+                normalization: "The process of converting a vector to a unit vector (magnitude 1) while preserving direction."
+            };
+            
+            return descriptions[topic] || "A vector physics concept involving direction and magnitude.";
+        }
+
+        // Generate visual explanation
+        function generateVisualExplanation() {
+            document.getElementById('visual-explanation').style.display = 'block';
+            document.getElementById('visual-description').textContent = 
+                "This visual shows the relationship between vectors in a torque calculation. " +
+                "The position vector (r) and force vector (F) form an angle θ. " +
+                "The torque is perpendicular to both r and F, with magnitude rFsin(θ).";
+            
+            // Simple visualization using p5.js
+            const canvas = document.getElementById('visual-canvas');
+            canvas.innerHTML = '';
+            
+            // Create a simple p5 sketch
+            const sketch = (p) => {
+                p.setup = () => {
+                    p.createCanvas(300, 200);
+                    p.background(240);
+                    
+                    // Draw coordinate system
+                    p.stroke(150);
+                    p.line(50, 100, 250, 100); // x-axis
+                    p.line(150, 20, 150, 180); // y-axis
+                    
+                    // Draw vectors
+                    p.stroke(0, 0, 255);
+                    p.strokeWeight(2);
+                    p.line(150, 100, 220, 100); // r vector
+                    
+                    p.stroke(255, 0, 0);
+                    p.line(220, 100, 220, 50); // F vector
+                    
+                    // Draw angle arc
+                    p.noFill();
+                    p.stroke(0, 150, 0);
+                    p.arc(220, 100, 30, 30, -p.HALF_PI, 0);
+                    
+                    // Labels
+                    p.fill(0);
+                    p.noStroke();
+                    p.text("r", 185, 90);
+                    p.text("F", 230, 75);
+                    p.text("θ", 235, 95);
+                };
+            };
+            
+            new p5(sketch, 'visual-canvas');
+        }
+
+        // Generate question-specific visual
+        function generateQuestionVisual(visualType, questionIndex = null) {
+            document.getElementById('visual-explanation').style.display = 'block';
+            const canvas = document.getElementById('visual-canvas');
+            canvas.innerHTML = '';
+            
+            // Create a simple p5 sketch based on visual type
+            const sketch = (p) => {
+                p.setup = () => {
+                    p.createCanvas(300, 200);
+                    p.background(240);
+                    
+                    if (visualType === 'dot_product') {
+                        drawDotProduct(p);
+                    } else if (visualType === 'cross_product') {
+                        drawCrossProduct(p);
+                    } else if (visualType === 'torque') {
+                        drawTorque(p);
+                    } else if (visualType === 'unit_vector') {
+                        drawUnitVector(p);
+                    } else {
+                        drawDefaultVector(p);
+                    }
+                };
+            };
+            
+            new p5(sketch, 'visual-canvas');
+            
+            // Update description
+            let description = '';
+            switch(visualType) {
+                case 'dot_product':
+                    description = "The dot product measures how much one vector extends in the direction of another.";
+                    break;
+                case 'cross_product':
+                    description = "The cross product produces a vector perpendicular to both input vectors.";
+                    break;
+                case 'torque':
+                    description = "Torque is the rotational equivalent of force, calculated as r × F.";
+                    break;
+                case 'unit_vector':
+                    description = "A unit vector has length 1 and indicates direction only.";
+                    break;
+                default:
+                    description = "Vector visualization showing direction and magnitude.";
+            }
+            
+            document.getElementById('visual-description').textContent = description;
+        }
+
+        // Drawing functions for different visual types
+        function drawDotProduct(p) {
+            // Draw coordinate system
+            p.stroke(150);
+            p.line(50, 100, 250, 100); // x-axis
+            p.line(150, 20, 150, 180); // y-axis
+            
+            // Draw vectors
+            p.stroke(0, 0, 255);
+            p.strokeWeight(2);
+            p.line(150, 100, 220, 150); // Vector A
+            
+            p.stroke(255, 0, 0);
+            p.line(150, 100, 220, 100); // Vector B
+            
+            // Draw projection
+            p.stroke(0, 0, 255, 100);
+            p.strokeWeight(1);
+            p.line(220, 150, 220, 100);
+            
+            // Labels
+            p.fill(0);
+            p.noStroke();
+            p.text("A", 200, 140);
+            p.text("B", 200, 90);
+            p.text("A·B = |A||B|cos(θ)", 160, 30);
+        }
+
+        function drawCrossProduct(p) {
+            // Draw 3D-like coordinate system
+            p.stroke(150);
+            p.line(50, 150, 250, 150); // x-axis
+            p.line(150, 50, 150, 200); // y-axis
+            p.line(100, 100, 200, 50); // z-axis
+            
+            // Draw vectors
+            p.stroke(0, 0, 255);
+            p.strokeWeight(2);
+            p.line(150, 150, 220, 150); // Vector A
+            
+            p.stroke(255, 0, 0);
+            p.line(150, 150, 150, 100); // Vector B
+            
+            // Draw cross product vector
+            p.stroke(0, 150, 0);
+            p.line(150, 150, 130, 120); // A × B
+            
+            // Labels
+            p.fill(0);
+            p.noStroke();
+            p.text("A", 200, 140);
+            p.text("B", 140, 80);
+            p.text("A×B", 120, 110);
+            p.text("A×B is perpendicular to both A and B", 120, 30);
+        }
+
+        function drawTorque(p) {
+            // Draw pivot point
+            p.fill(100);
+            p.noStroke();
+            p.circle(100, 100, 10);
+            
+            // Draw position vector
+            p.stroke(0, 0, 255);
+            p.strokeWeight(2);
+            p.line(100, 100, 180, 100); // r vector
+            
+            // Draw force vector
+            p.stroke(255, 0, 0);
+            p.line(180, 100, 180, 50); // F vector
+            
+            // Draw angle arc
+            p.noFill();
+            p.stroke(0, 150, 0);
+            p.arc(180, 100, 30, 30, -p.HALF_PI, 0);
+            
+            // Draw rotation arrow
+            p.stroke(150, 0, 150);
+            p.noFill();
+            p.arc(100, 100, 60, 60, -p.HALF_PI, p.PI);
+            p.triangle(95, 70, 100, 60, 105, 70);
+            
+            // Labels
+            p.fill(0);
+            p.noStroke();
+            p.text("r", 140, 90);
+            p.text("F", 190, 75);
+            p.text("θ", 195, 95);
+            p.text("τ = r × F", 120, 30);
+        }
+
+        function drawUnitVector(p) {
+            // Draw coordinate system
+            p.stroke(150);
+            p.line(50, 100, 250, 100); // x-axis
+            p.line(150, 20, 150, 180); // y-axis
+            
+            // Draw original vector
+            p.stroke(0, 0, 255);
+            p.strokeWeight(2);
+            p.line(150, 100, 210, 130); // Original vector
+            
+            // Draw unit vector
+            p.stroke(255, 0, 0);
+            p.strokeWeight(3);
+            
+            // Calculate unit vector direction
+            const dx = 60;
+            const dy = 30;
+            const magnitude = Math.sqrt(dx*dx + dy*dy);
+            const ux = dx / magnitude;
+            const uy = dy / magnitude;
+            
+            // Draw unit vector (scaled up for visibility)
+            p.line(150, 100, 150 + ux * 40, 100 + uy * 40);
+            
+            // Labels
+            p.fill(0);
+            p.noStroke();
+            p.text("v", 190, 125);
+            p.text("û (unit vector)", 170, 80);
+            p.text("û = v/|v|", 160, 30);
+        }
+
+        function drawDefaultVector(p) {
+            // Draw coordinate system
+            p.stroke(150);
+            p.line(50, 100, 250, 100); // x-axis
+            p.line(150, 20, 150, 180); // y-axis
+            
+            // Draw vector
+            p.stroke(0, 0, 255);
+            p.strokeWeight(2);
+            p.line(150, 100, 220, 150);
+            
+            // Draw components
+            p.stroke(0, 0, 255, 100);
+            p.strokeWeight(1);
+            p.line(150, 100, 220, 100);
+            p.line(220, 100, 220, 150);
+            
+            // Labels
+            p.fill(0);
+            p.noStroke();
+            p.text("v", 200, 140);
+            p.text("v_x", 185, 110);
+            p.text("v_y", 230, 125);
+            p.text("Vector with components", 160, 30);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeUserPerformance();
+            
+            // Set up event listeners
+            document.getElementById('submit-btn').addEventListener('click', submitAnswer);
+            
+            // Initialize leaderboard with sample data
+            const leaderboard = document.getElementById('leaderboard');
+            const sampleUsers = [
+                { name: 'VectorMaster', points: 150 },
+                { name: 'PhysicsPro', points: 120 },
+                { name: 'MathWizard', points: 95 }
+            ];
+            
+            sampleUsers.forEach(user => {
+                const item = document.createElement('div');
+                item.className = 'leaderboard-item';
+                item.innerHTML = `<span>${user.name}</span><span>${user.points}</span>`;
+                leaderboard.appendChild(item);
+            });
+            
+            // Set user rank
+            document.getElementById('user-rank').textContent = userPoints;
+        });
+        
+    </script>
+</body>
+</html>
